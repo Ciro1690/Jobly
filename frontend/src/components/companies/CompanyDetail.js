@@ -16,7 +16,7 @@ const CompanyDetail = () => {
             setIsLoading(false);
         }
         getCompany(name);
-    }, []);
+    }, [name]);
 
     if (isLoading) {
         return <p>Loading &hellip;</p>

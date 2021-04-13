@@ -13,7 +13,6 @@ const JobList = () => {
     useEffect(() => {
         async function getJobs() {
             let jobs = await JoblyApi.getJobs();
-            console.log(jobs)
             setJobs(jobs);
             setIsLoading(false);
         }

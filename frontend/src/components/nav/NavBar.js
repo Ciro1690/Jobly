@@ -7,10 +7,10 @@ import {
     NavLink
 } from 'reactstrap';
 import {Link} from 'react-router-dom';
+import UserContext from '../routes/UserContext'
 
-const NavBar = () => {
-
-    const value = useContext(currentUser);
+const NavBar = ({LogOut}) => {
+    const { currentUser } = useContext(UserContext);
 
     return (
             <Navbar expand="lg border">
@@ -29,7 +29,7 @@ const NavBar = () => {
                             <NavLink tag={Link} to="/profile">Profile</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink tag={Link} to="/logout">Logout</NavLink>
+                            <NavLink tag={Link} to="/" onClick={LogOut}>Logout {currentUser}</NavLink>
                         </NavItem> 
                     </Nav> :
                     <Nav className="ml-auto" navbar>

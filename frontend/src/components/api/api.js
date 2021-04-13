@@ -53,22 +53,24 @@ class JoblyApi {
     return res.jobs;
   }
 
-  static async Signup(body) {
-    this.request.method = "post"
-    let res = await this.request(`auth/register`, {body});
+  static async Signup(data) {
+    let res = await this.request(`auth/register`, data, "post");
     return res.token;
   }
 
-  static async Login(body) {
-    this.request.method = "post"
-    let res = await this.request(`auth/token`, {body});
+  static async Login(data) {
+    let res = await this.request(`auth/token`, data, "post");
     return res.token;
   }
 
-  static async Logout() {
-    this.request.method = "post"
-    let res = await this.request(`auth/token`);
-    return res.token;
+  static async getCurrentUser(username) {
+    let res = await this.request(`users/${username}`)
+    return res.user
+  }
+
+  static async editUser(username, data) {
+    let res = await this.request(`users/${username}`, data, "patch")
+    return res.user
   }
 
 }

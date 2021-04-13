@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import {
     Form,
     FormGroup,
@@ -7,6 +8,7 @@ import {
 
 
 const Signup = ({SignUp}) => {
+
     const INITIAL_DATA = {
         username: "",
         password: "",
@@ -15,6 +17,8 @@ const Signup = ({SignUp}) => {
         email: ""
     }
     const [formData, setFormData] = useState(INITIAL_DATA)
+    const [errors, setErrors] = useState([]);
+    let history = useHistory();
 
     const handleSubmit = async e => {
         e.preventDefault()
@@ -25,8 +29,13 @@ const Signup = ({SignUp}) => {
             "lastName": formData.lastName,
             "email": formData.email
         }
-        SignUp(signUpJSON)
+        const result = await SignUp(signUpJSON)
         setFormData(INITIAL_DATA)
+        if (result.success) {
+            history.push("/");
+        } else {
+            setErrors(result.errors)
+        }
     }
 
     const handleChange = e => {
@@ -87,6 +96,11 @@ const Signup = ({SignUp}) => {
                         />
                     </FormGroup>
                     <Button>Submit</Button>
+                    <div>
+                        {errors.length ? 
+                            <p>{errors}</p>
+                        : null }
+                    </div>
             </Form>
         </>
     )
