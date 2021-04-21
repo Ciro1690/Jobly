@@ -11,13 +11,14 @@ import UserContext from '../routes/UserContext'
 
 const NavBar = ({LogOut}) => {
     const { currentUser } = useContext(UserContext);
+    const token = localStorage.getItem('token');
 
     return (
             <Navbar expand="lg border">
-            <NavLink exact tag={Link} to="/" className="navbar-brand">
+            <NavLink tag={Link} to="/" className="navbar-brand">
                     Jobly
                 </NavLink>
-                {currentUser ? 
+                {token ? 
                     <Nav className="ml-auto" navbar>
                         <NavItem>
                             <NavLink tag={Link} to="/companies">Companies</NavLink>

@@ -10,6 +10,7 @@ import Signup from "../auth/Signup";
 import Profile from "../auth/Profile";
 import JoblyApi from '../api/api';
 import UserContext from './UserContext';
+import ProtectedRoute from './ProtectedRoute';
 import jwt from 'jsonwebtoken';
 
 const Routes = () => {
@@ -45,7 +46,6 @@ const Routes = () => {
     const editUser = async (currentUser, formData) => {
         try {
             const user = await JoblyApi.editUser(currentUser, formData)
-            console.log(user)
             return {success: true, user}
         } catch (err) {
             return {success: false, errors: err}
@@ -55,15 +55,26 @@ const Routes = () => {
     const LogOut = () => {
         setCurrentUser(null)
         setToken(null)
+        localStorage.removeItem('token');
     }
+
+    const applyToJob = async (currentUser, jobId) => {
+        try {
+            const job = await JoblyApi.apply(currentUser, jobId)
+            return { success: true, job }
+        } catch (err) {
+            return { success: false, errors: err }
+        }    }
 
     useEffect(function getUserInfo() {
         async function getCurrentUser() {
+            const token = localStorage.getItem('token');
             if (token) {
                 try {
                     let { username } = jwt.decode(token);
                     JoblyApi.token = token;
                     const userInfo = await JoblyApi.getCurrentUser(username);
+                    setCurrentUser(username)
                     setUserInfo(userInfo)
                 }
                 catch (err) {
@@ -77,30 +88,30 @@ const Routes = () => {
 
      return (
         <BrowserRouter>
-             <UserContext.Provider value={{currentUser, token, userInfo}}>
+             <UserContext.Provider value={{currentUser, token, userInfo, applyToJob}}>
                  <NavBar LogOut={LogOut}/>
                 <Switch>
                     <Route exact path="/">
                         <Home />
                     </Route>
-                    <Route exact path="/companies">
-                        <CompanyList />
-                    </Route>
-                    <Route exact path="/companies/:name">
+                     <ProtectedRoute exact path="/companies">
+                            <CompanyList />
+                    </ProtectedRoute>
+                    <ProtectedRoute exact path="/companies/:name">
                         <CompanyDetail />
-                    </Route>
-                    <Route exact path="/jobs">
+                    </ProtectedRoute>
+                    <ProtectedRoute exact path="/jobs">
                         <JobList />
-                    </Route>
+                    </ProtectedRoute>
                     <Route exact path="/login">
                          <Login LogIn={LogIn}/>
                     </Route>
                     <Route exact path="/signup">
                         <Signup SignUp={SignUp}/>
                     </Route>
-                    <Route exact path="/profile">
-                        <Profile editUser={editUser}/>
-                    </Route>
+                    <ProtectedRoute exact path="/profile">
+                        <Profile editUser={editUser} setUserInfo={setUserInfo}/>
+                    </ProtectedRoute>
                     <Route>
                         <p>Hmmm. I can't seem to find what you want.</p>
                     </Route>

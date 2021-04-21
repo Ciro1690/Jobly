@@ -1,5 +1,4 @@
 import React, {useContext, useState} from 'react';
-import {useHistory} from 'react-router-dom';
 import UserContext from '../routes/UserContext'
 import {
     Card,
@@ -9,7 +8,7 @@ import {
     Button
 } from 'reactstrap';
 
-const Profile = ({editUser}) => {
+const Profile = ({editUser, setUserInfo}) => {
     const { userInfo } = useContext(UserContext);
     const INITIAL_STATE = {
         firstName: userInfo.firstName,
@@ -18,7 +17,6 @@ const Profile = ({editUser}) => {
     };
     const [formData, setFormData] = useState(INITIAL_STATE)
     const [errors, setErrors] = useState([]);
-    let history = useHistory();
 
     const handleChange = e => {
         const { name, value } = e.target
@@ -35,20 +33,24 @@ const Profile = ({editUser}) => {
             "lastName": formData.lastName,
             "email": formData.email
         }
-        const result = await editUser(userInfo.username, newUserInfo)
-        if (result.success) {
-            const NEW_STATE = {
-                firstName: result.user.firstName,
-                lastName: result.user.lastName,
-                email: result.user.email
-            };
-            console.log(NEW_STATE)
-            setFormData(NEW_STATE)
-            history.push("/");
-        } else {
-            setErrors(result.errors);
+        await editUser(userInfo.username, newUserInfo)
+            .then((res) => {
+                if (res.success) {
+                    const NEW_STATE = {
+                        firstName: res.user.firstName,
+                        lastName: res.user.lastName,
+                        email: res.user.email,
+                    }
+                    setUserInfo(data => ({
+                        ...data,
+                        ...NEW_STATE
+                    }))
+                    alert('Changed user information')
+                } else {
+                    setErrors(res.errors);
+                }
+            })
         }
-    }
 
     return (
         <div className="col-md-8 offset-md-2">

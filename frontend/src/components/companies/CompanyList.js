@@ -54,7 +54,7 @@ const CompanyList = () => {
                 </button>
             </form>
             {companies.map(company => (
-                <CompanyCard company = {company}>{company.name}</CompanyCard>
+                <CompanyCard key={company.handle} company = {company}>{company.name}</CompanyCard>
             ))}
         </div>
     )
